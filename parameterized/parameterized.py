@@ -528,9 +528,14 @@ class parameterized(object):
 
     @classmethod
     def param_as_standalone_func(cls, p, func, name):
-        @wraps(func)
-        def standalone_func(*a):
-            return func(*(a + p.args), **p.kwargs)
+        if inspect.iscoroutinefunction(func):
+            @wraps(func)
+            async def standalone_func(*a):
+                return await func(*(a + p.args), **p.kwargs)
+        else:
+            @wraps(func)
+            def standalone_func(*a):
+                return func(*(a + p.args), **p.kwargs)
         standalone_func.__name__ = name
 
         # place_as is used by py.test to determine what source file should be
