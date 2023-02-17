@@ -21,6 +21,7 @@ except ImportError:
 
 PY3 = sys.version_info[0] == 3
 PY2 = sys.version_info[0] == 2
+PY35_OR_NEWER = PY3 and sys.version_info.minor >= 5
 
 
 if PY3:
@@ -528,7 +529,7 @@ class parameterized(object):
 
     @classmethod
     def param_as_standalone_func(cls, p, func, name):
-        if inspect.iscoroutinefunction(func):
+        if PY35_OR_NEWER and inspect.iscoroutinefunction(func):
             @wraps(func)
             async def standalone_func(*a):
                 return await func(*(a + p.args), **p.kwargs)
